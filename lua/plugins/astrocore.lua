@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 -- AstroCore provides a central place to modify mappings, vim options, autocommands, and more!
 -- Configuration documentation can be found with `:h astrocore`
@@ -23,6 +23,12 @@ return {
     diagnostics = {
       virtual_text = true,
       underline = true,
+      float = {
+        source = "always", -- Show source in diagnostic popup (e.g., "eslint", "lua_ls")
+        border = "rounded", -- Rounded border style
+        header = "",
+        prefix = "",
+      },
     },
     -- passed to `vim.filetype.add`
     filetypes = {
@@ -45,11 +51,31 @@ return {
         spell = false, -- sets vim.opt.spell
         signcolumn = "yes", -- sets vim.opt.signcolumn to yes
         wrap = false, -- sets vim.opt.wrap
+        updatetime = 500, -- sets vim.opt.updatetime to 500ms (for CursorHold autocmd)
       },
       g = { -- vim.g.<key>
         -- configure global vim variables (vim.g)
         -- NOTE: `mapleader` and `maplocalleader` must be set in the AstroNvim opts or before `lazy.setup`
         -- This can be found in the `lua/lazy_setup.lua` file
+      },
+    },
+    -- Autocommands can be configured through AstroCore as well.
+    autocmds = {
+      diagnostic_hover = {
+        {
+          event = "CursorHold",
+          desc = "Show diagnostics on cursor hold",
+          callback = function()
+            local opts = {
+              focusable = false,
+              close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+              border = "rounded",
+              source = "always",
+              prefix = " ",
+            }
+            vim.diagnostic.open_float(nil, opts)
+          end,
+        },
       },
     },
     -- Mappings can be configured through AstroCore as well.
@@ -58,6 +84,12 @@ return {
       -- first key is the mode
       n = {
         -- second key is the lefthand side of the map
+
+        -- Show diagnostics in a floating window
+        ["gl"] = {
+          function() vim.diagnostic.open_float() end,
+          desc = "Show line diagnostics",
+        },
 
         -- navigate buffer tabs
         ["]b"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Next buffer" },
@@ -71,6 +103,12 @@ return {
             )
           end,
           desc = "Close buffer from tabline",
+        },
+
+        -- Snacks picker buffers (like Kickstart's <leader><space>)
+        ["<Leader><Space>"] = {
+          function() require("snacks").picker.buffers() end,
+          desc = "Find buffers",
         },
 
         -- tables with just a `desc` key will be registered with which-key if it's installed

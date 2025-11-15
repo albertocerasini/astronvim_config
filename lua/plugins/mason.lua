@@ -1,5 +1,3 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
 -- Customize Mason
 
 ---@type LazySpec
@@ -13,12 +11,14 @@ return {
       ensure_installed = {
         -- install language servers
         "lua-language-server",
+        "tailwindcss-language-server",
+        "typescript-language-server",
 
         -- install formatters
         "stylua",
 
         -- install debuggers
-        "debugpy",
+        -- "debugpy",
 
         -- install any other package
         "tree-sitter-cli",
